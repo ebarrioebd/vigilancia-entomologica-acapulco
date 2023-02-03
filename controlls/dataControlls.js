@@ -14,6 +14,7 @@ async function loadColonias(req, res) {
 async function getColJSON(req, res) {
     console.log("rgetZonaArraygid:", req.body.gid)
     let filtrado = _.filter(jsonZonaAca.features, function (item, index) { return _.contains(jsonAarray(req.body.gid), item.id); });
+    
     console.log(".." + filtrado.length)
     res.send({ zona: filtrado })
 }

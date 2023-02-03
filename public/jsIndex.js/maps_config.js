@@ -64,7 +64,7 @@ var capasBase = {
 satellite.addTo(map)
 var selectorCapas = new L.control.layers(capasBase);
 selectorCapas.addTo(map);
-//selectorCapas.addTo(mapCSVInter);
+selectorCapas.addTo(mapCSVInter);
 //fin de la seccion del mapa
 
 /*Añadir controlles para remover o agreagar los marcadores en el mapa*/
@@ -91,6 +91,7 @@ document.getElementById('remover-marcadoresMAP').addEventListener('click', funct
 var latld = "";
 var csvH="latitud,longitud,gid,nom_col,cantidad_huevos,fecha\n";
 var c="";
+var p=""
 console.log("EventClick..")
 mapCSVInter.on("click_", function (event) {
     //console.log("EventClick....")
@@ -100,8 +101,10 @@ mapCSVInter.on("click_", function (event) {
     L.marker([event.latlng.lat, event.latlng.lng], { color: "red", draggable: false, title: "" + latld }).addTo(mapCSVInter)
     //document.getElementById("area").value += latld = "[" + event.latlng.lat + ", " + event.latlng.lng + "]" + ",";
     //console.log(latld)
-    c+=""+event.latlng.lat + "," + event.latlng.lng+",25670,HORNOS INSURGENTES,,2022-11-01\n";
-    console.log(csvH+c)
+    //c+=""+event.latlng.lat + "," + event.latlng.lng+",25670,HORNOS INSURGENTES,,2022-11-01\n";
+    p+="["+event.latlng.lng+","+event.latlng.lat+"],"
+    console.log("[["+p+"]]");
+    //console.log(csvH+c)
 });
 //CENTRO 25536
 //PROGRESO 25413

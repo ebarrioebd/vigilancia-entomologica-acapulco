@@ -270,7 +270,7 @@ function crearMapaDeCalor(zona) {
         console.log("Data:", event.data);
         var zi = event.data.zi;
         var mD = event.data.mD;
-        //var Imoran=correlacio(mD,event.data.z)
+        var Imoran=correlacio(mD,event.data.z)
         var h = event.data.h;
         var nugget = event.data.nugget,
             rango = event.data.rango,

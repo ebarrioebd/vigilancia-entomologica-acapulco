@@ -11,6 +11,61 @@ function Zi(centro, puntos, exp) {
     return s1 / s2
 }
 
+//invertir matriz
+function invM(matriz) {
+    // Obtener el tamaño de la matriz
+    let n = matriz.length;
+
+    // Crear una matriz identidad para almacenar la matriz invertida
+    let matrizInvertida = [];
+    for (let i = 0; i < n; i++) {
+        matrizInvertida[i] = [];
+        for (let j = 0; j < n; j++) {
+            if (i === j) {
+                matrizInvertida[i][j] = 1;
+            } else {
+                matrizInvertida[i][j] = 0;
+            }
+        }
+    }
+
+    // Crear una copia de la matriz original para realizar las operaciones
+    let matrizCopia = [];
+    for (let i = 0; i < n; i++) {
+        matrizCopia[i] = [];
+        for (let j = 0; j < n; j++) {
+            matrizCopia[i][j] = matriz[i][j];
+        }
+    }
+
+    // Algoritmo Gauss-Jordan para invertir la matriz
+    for (let i = 0; i < n; i++) {
+        // Obtener el elemento diagonal
+        let elementoDiagonal = matrizCopia[i][i];
+
+        // Normalizar la fila actual
+        for (let j = 0; j < n; j++) {
+            matrizCopia[i][j] /= elementoDiagonal;
+            matrizInvertida[i][j] /= elementoDiagonal;
+        }
+
+        // Hacer ceros en las columnas restantes
+        for (let j = 0; j < n; j++) {
+            if (j !== i) {
+                let factor = matrizCopia[j][i];
+                for (let k = 0; k < n; k++) {
+                    matrizCopia[j][k] -= factor * matrizCopia[i][k];
+                    matrizInvertida[j][k] -= factor * matrizInvertida[i][k];
+                }
+            }
+        }
+    }
+
+    return matrizInvertida;
+}
+//fin de invertir matriz
+
+/*
 //invertir MAtriz
 var Sylvester = {}
 Sylvester.Matrix = function() {}
@@ -209,12 +264,13 @@ function invM(elements) {
         return null
     }
 }
-
 /////fin de invertir matriz
+*/
 function c(o, b) {
     console.log(o, b);
 }
-//import { inv } from 'mathjs'
+
+
 
 function transpose(matrix) {
     const rows = matrix.length,
@@ -258,6 +314,29 @@ Array.prototype.pip = function(x, y) {
     }
     return c;
 }
+//minimos cuadrados ordinarios
+function OrdinaryLeastsquares(X,Y,lagsemi,rango){
+    //funcion exponencial
+    //genera valores del variogrma teorico del valor de Xs
+    for (var i = 0; i < Y.length; i++) {
+        X[i][1] = 1.0 - Math.exp(-(1.0 / (1/3)) * lagsemi[i] / rango); // 1.0 - Math.exp(-(1.0 / A) * lagsemi[i] /rango );
+    }
+    c("X:", X)
+    //se ajusta el variograma teorico
+    var Xt = transpose(X) // math.transpose(X)
+    c("1")
+    var XtX = mult(Xt, X) //math.multiply(Xt, X) 
+    var XtXinv = invM(XtX); 
+    c("2")
+    var xinvxt = mult(XtXinv, Xt) 
+    var ny = Y.length;
+    var ya = Array(ny).fill().map(() => Array(ny).fill(0));
+    for (var i = 0; i < ny; i++) {
+        ya[i] = [Y[i]];
+    } 
+    c("3")
+    return mult(xinvxt, ya);
+}
 
 
 function getVariograma(x, y, z) { 
@@ -265,29 +344,27 @@ function getVariograma(x, y, z) {
     var rango=0;
     var sill=0;
 
-    var mDistancias = [];
-    var mValores = []
+    var disij = [];
+    var Zi_Z_j = []
     var dist = [];
     //Calcular matriz de distancias y de diferencias
     //mV=abs(zi-zj) = |Zi - Zj| donde Zi,Zj son valores en el punto P[i] y P[j] o Coor[i]=[lat,long], Coor[j]=[lat,long], Z(Pi = [x=lat,y=long])=zi
     //mD=distancia entre todos los puntos
     for (var i = 0; i < z.length; i++) {
-        mDistancias[i] = [];
-        mValores[i] = [];
+        disij[i] = [];
+        Zi_Z_j[i] = [];
         for (var j = 0; j < z.length; j++) {
-            mValores[i][j] =Math.abs(z[i] - z[j]);
-            //mValores[i][j] = Math.pow(z[i]-z[j],2)//Math.abs(z[i] - z[j]);//valores de las diferencias de la semivarianza
-            mDistancias[i][j] = Math.sqrt(Math.pow(x[i] - x[j], 2) + Math.pow(y[i] - y[j], 2))*100000 //distancias de entre cada punto
+            Zi_Z_j[i][j] =Math.abs(z[i] - z[j]);
+            //Zi_Z_j[i][j] = Math.pow(z[i]-z[j],2)//Math.abs(z[i] - z[j]);//valores de las diferencias de la semivarianza
+            disij[i][j] = Math.sqrt(Math.pow(x[i] - x[j], 2) + Math.pow(y[i] - y[j], 2))*100000 //distancias de entre cada punto
             //turf.distance
-            //mDistancias[i][j] = turf.distance([x[i], y[i]], [x[j], y[j]], units);
+            //disij[i][j] = turf.distance([x[i], y[i]], [x[j], y[j]], units);
             if (i != j)
-                dist.push(mDistancias[i][j]); //todas las distancias que nos son el mismo punto !== 0
+                dist.push(disij[i][j]); //todas las distancias que nos son el mismo punto !== 0
         }
     }
-    //variograma.mD=mDistancias;
-    //console.log("MD:",mDistancias);
-    dist.sort((a, b) => { return a - b }) //oredena  los valores de las distancia menor-mayor
-    rango = dist[dist.length - 1]//toma la distancia mas larga para obtener el rango
+    //console.log("MD:",disij);
+    rango = dist.sort((a, b) => { return a - b })[dist.length-1]//toma la distancia mas larga para obtener el rango
     //console.log("rango:.",dist)
     //console.log("dist.length::"+dist.length)
     //indica la cantidad de intervalos
@@ -307,15 +384,15 @@ function getVariograma(x, y, z) {
         //lagsemi[k] = 0
         //semiva[k] = 0
     }
-    for (var i = 0; i < mDistancias.length; i++) {
-        for (var j = 0; j < mDistancias.length; j++) {
+    for (var i = 0; i < disij.length; i++) {
+        for (var j = 0; j < disij.length; j++) {
             for (var k = 0; k < lags; k++) {
-                //si mDis(xi,xj) estan en [ Dis(xi,xj) , Dis(xi,xj) + Tolerancia ] ==> [D,D+T]
+                //si Disij(xi,xj) estan en [ Dis(xi,xj) , Dis(xi,xj) + Tolerancia ] ==> [D,D+T]
                 //Recorre cada intervalo y verifica que alguno de esos puntos esten dentro de algun intervalo  
-                if (mDistancias[i][j] > (k) * tolerance & mDistancias[i][j] <= (k + 1) * tolerance) {
+                if (disij[i][j] > (k) * tolerance & disij[i][j] <= (k + 1) * tolerance) {
                     //if (parseInt(atan2([x[i], y[i]], [x[j], y[j]])) > 0 & parseInt(atan2([x[i], y[i]], [x[j], y[j]])) <= 90) {
-                    lag[k] += mDistancias[i][j];//se suman las distancia de cada par, asi despues promeidarlas
-                    semi[k] += mValores[i][j];//se suman los mValores en el intervalo de los puntos que estan en el intervalo de busqueda de los pares
+                    lag[k] += disij[i][j];//se suman las distancia de cada par, asi despues promeidarlas
+                    semi[k] += Zi_Z_j[i][j];//se suman los Zi_Z_j en el intervalo de los puntos que estan en el intervalo de busqueda de los pares
                     par[k] += 1;//se agregan los pares encontrados dentro del intervalo, cada par encontrado aumnta en uno
                     //}
                 }
@@ -343,45 +420,18 @@ function getVariograma(x, y, z) {
     //console.log("lagsemi[l]-lagsemi[0]::",Math.max.apply(null, lagsemi),lagsemi[0])
     //el rango se obtiene al restar el lags maximo menos el minimo
     rango = Math.max.apply(null, lagsemi) - lagsemi[0]; //
-    //variograma.lags = lagsemi;
-    //variograma.semi = semiva;
     //Ajuste por minimos cuadrados ordinarios
     var Y = semiva;
     var X = Array(Y.length).fill().map(() => Array(2).fill(1)); 
-    //var A = variograma.A;
-    //funcion exponencial
-    //genera valores del variogrma teorico
-    for (var i = 0; i < Y.length; i++) {
-        X[i][1] = 1.0 - Math.exp(-(1.0 / (1/3)) * lagsemi[i] / rango); // 1.0 - Math.exp(-(1.0 / A) * lagsemi[i] /rango );
-    }
-    c("X:", X)
-    //se ajusta el variograma teorico
-    var Xt = transpose(X) // math.transpose(X)
-    c("1")
-    var XtX = mult(Xt, X) //math.multiply(Xt, X) 
-    var XtXinv = invM(XtX); 
-    c("2")
-    var xinvxt = mult(XtXinv, Xt) 
-    var ny = Y.length;
-    var ya = Array(ny).fill().map(() => Array(ny).fill(0));
-    for (var i = 0; i < ny; i++) {
-        ya[i] = [Y[i]];
-    } 
-    c("3")
-    var W = mult(xinvxt, ya) //math.multiply(math.multiply(XtXinv, Xt), Y)  //valores que minimizan el error
-    //var Z = math.multiply(MXt, MX)
-    //math.inv(MZ)
+    //W0,W1 son los valores que minimizan el error (Y(h,W)-Y*(h))^2 y w0,w1 ajustan  Y(h,W) a los valores de Y*(h) 
+    var W=OrdinaryLeastsquares(X,Y,lagsemi,rango); //valores que minimizan el error cuadratico
     nugget =  W[0]// > 0 ? W[0]: 0;
     console.log("nugget:"+nugget)
     sill = parseFloat(W[1]) + parseFloat(nugget);
-    //variograma.w0 = W[0];
+    //w0 = W[0];
     var sill_partial=W[1];
-    //variograma.w1 = W[1];
-    //c("Nugget:", nugget)
-    //c("sill:", sill)
-    //variograma.n = x.length;
     var n = x.length;
-    //conseguir la Matriz del Variograma Teorico de los puntos de la muestra
+    //conseguir la Matriz del Variograma Teorico de los puntos de muestra
     var mvt = Array(n+1).fill(1).map(() => Array(n+1).fill(1));
     console.log("MVT=",mvt)
     for (var i = 0; i < n; i++) {
@@ -394,7 +444,7 @@ function getVariograma(x, y, z) {
     var matriz_variograma_teorico=invM(mvt)
     console.log("MVT=",matriz_variograma_teorico)
 
-    return {nugget:nugget,mvt:matriz_variograma_teorico,sill:sill,rango:rango,lags:lagsemi,semi:semiva,mD:mDistancias,C1:sill_partial}
+    return {nugget:nugget,mvt:matriz_variograma_teorico,sill:sill,rango:rango,lags:lagsemi,semi:semiva,mD:disij,C1:sill_partial}
 };
 function estimar(lat, long, variograma,x,y,z) { 
     //c(lat,long)
@@ -408,7 +458,6 @@ function estimar(lat, long, variograma,x,y,z) {
     var pesos = mult(variograma.mvt,_Y)//math.multiply(variograma.K, math.transpose(_Y));
     pesos= pesos.slice(0, x.length); 
     return mult(transpose(pesos),z)
-
 }
 
 self.addEventListener('message', function(e) { 
