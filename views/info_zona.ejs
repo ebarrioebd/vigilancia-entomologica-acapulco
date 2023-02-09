@@ -1,80 +1,200 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Leaflet Ovitrampas</title>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="/css/jquery.tooltip.css">
-    <style>
-    #myChart {
-        width: 600px;
-        height: 320px;
-    }
-
-    #rango {
-        width: 60px;
-        font-size: 15px;
-        font-family: fantasy;
-        text-align: center;
-    }
-
-    #id_radio {
-        border: solid;
-        color: white;
-        font-size: 17px;
-        /* font-family: inherit; */
-        background-color: #0100fa;
-        padding: 6px;
-    }
-    #map{
-        position: sticky !important; 
-        width: 100%; 
-        height: 400px;
-        box-shadow: -2px  13px 20px 7px #888;
-    }
-    </style>
 </head>
 
 <body>
-    <!--
-    <div class="col-12" style="height:100%">
-        <button id="ocultar">ocultar</button><button id="mostrar">Mostrar</button><canvas id="canvasMap" style="display: none;"></canvas>
-        <div id="map"></div> 
-    </div>
-    <img src="/images/loading2.gif" style="left: 40%;position: relative;width: 20%;height: 40%;margin-top: -50%;" id="imgLoading">
-    </div>
-    --> 
+    <div id="interpolarCSV" style="">
         <div id="nomColInter">
             <p id="nomColInterp"> </p><button onclick="showVariograma()">Ver Semivariograma</button>
-            <button id="ocultar">ocultar</button><button id="mostrar">Mostrar</button>
+            <button id="ocultarIMG">Ocultar IMG</button><button id="mostrarIMG">Mostrar IMG</button>
+            <button id="ocultarPuntos" onclick="ocultarPuntos()">Ocultar Puntos</button>
+            <button id="mostrarPuntos" onclick="mostrarPuntos()">Mostrar Puntos</button>
         </div>
+        <canvas id="canvasMap" style="display: none;"></canvas>
         <div id="contendCSV">
-            <canvas id="canvasMap" style="display: none;"></canvas>
-            <div class="map" id="map"></div><img src="/images/loading2.gif"
+            <div class="map" id="map_c2"></div><img src="/images/loading2.gif"
                 style="left: 40%;position: relative;width: 20%;height: 40%;margin-top: -50%;" id="imgLoading">
         </div>
-        <div id="id_variograma" style="display:none">
+    </div>
+    <div id="id_variograma" style="display:none">
         <div style="text-align: end;cursor: move;" id="moveVario"><button onclick="closeVariograma()"
                 style="border: none;background: #444444;"><img src="/images/close-button.png" height="35"
                     width="35"></button></div>
         <p id="VARIO_TITLE">Semivariograma</p>
-        <div id="grafdiv"> <canvas  id="variograma"></canvas></div>
+        <div id="grafdiv"> <canvas id="variograma"></canvas></div>
     </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script>
+    <script src="/js/chart-loader.js"></script>
+    <script src="/js/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+    <script src="/js/turf.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+
     <script>
-    document.getElementById("map").style.height = (screen.height - 120) + "px";
+        //configuracion de mapa1
+        console.log("maps_config.js")
+
+        var mapCSVInter = L.map('map_c2', {
+            center: [16.9077743, -99.8276894],
+            zoom: 12,
+        });
+        var maxZoom = 20, minZoom = 8;
+        mapLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>';
+
+        //L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
+        L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', { minZoom: minZoom, maxZoom: maxZoom, attribution: '&copy; ' + mapLink + ' Contributors', subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] }).addTo(mapCSVInter);
+
+        var capaOSM = new L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            minZoom: minZoom,
+            maxZoom: maxZoom,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        });
+        var satellite = new L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            minZoom: minZoom,
+            maxZoom: maxZoom,
+            attribution: '&copy; ' + mapLink + ' Contributors',
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+        });
+        var sat_text = new L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+            minZoom: minZoom,
+            maxZoom: maxZoom,
+            attribution: '&copy; ' + mapLink + ' Contributors',
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+        });
+        var roadmap = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+            minZoom: minZoom,
+            maxZoom: maxZoom,
+            attribution: '&copy; ' + mapLink + ' Contributors',
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+        });
+        var line = turf.lineString([[-99.8589592, 16.8926019], [-99.8388648, 16.937438],
+        [-99.7857949, 16.9098479], [-99.8204879, 16.8661551], [-99.8496849, 16.8822536]]);
+        var bbox = turf.bbox(line);
+        //console.log("BBox",bbox)
+        var urlWMS = "https://www.gits.igg.unam.mx/wmsproxy/wms?service=WMS&version=1.1.0&request=GetMap&layers=GITS:u_territorial_colonias_inegi_2010&styles=&bbox=-118.566139221191,14.4411649703979,-86.5519180297852,32.8095855712891&width=575&height=330&srs=EPSG:4326&format=image/png";
+        var colonias = new L.TileLayer.WMS('https://www.gits.igg.unam.mx/wmsproxy/wms', {
+            layers: 'GITS:u_territorial_colonias_inegi_2010',
+            format: 'image/png',
+            transparent: true,
+            cql_filter: "cvegeoedo==12 AND cvegeomuni==12001",
+            //bbox:bbox[0]+','+bbox[1]+','+bbox[2]+','+bbox[3],
+            //cql_filter:'(geom+IS+NOT+NULL+AND+l_room+IS+NOT+NULL+AND+BBOX(geom,'+bbox[0]+','+bbox[1]+','+bbox[2]+','+bbox[3]+'))',
+            version: '1.1.0',
+            crs: L.CRS.EPSG4326
+        })
+        var capasBase = {
+            "colonias": colonias,
+            "roadMap": roadmap,
+            "OpenStreetMap": capaOSM,
+            "sat_text": sat_text,
+            "satelite": satellite
+        };
+        var selectorCapas = new L.control.layers(capasBase);
+        selectorCapas.addTo(mapCSVInter);
+        //fin de la seccion del mapa
     </script>
-    <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
-    <script src="/js/Leaflet.Control.Custom.js"> </script>
-    <script src="/js/jquery.tooltip.js"></script>
-    <script src="https://npmcdn.com/@turf/turf/turf.min.js"> </script> 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.0.2/math.js"> </script>
-    <script src="/jsIndex.js/info_zonas.js"></script>
+    <script>
+        /* Chart Variograma*/
+        const ctxVariograma = document.getElementById('variograma').getContext('2d');
+        const chartVariograma = new Chart(ctxVariograma, {
+            type: 'scatter',
+            data: {
+                labels: [], //add
+                datasets: [{
+                    type: 'bubble',
+                    data: [], //add
+                    label: 'Variograma Experimental',
+                    options: {},
+                    backgroundColor: 'rgb(0, 0, 255)'
+                },
+                {
+                    type: 'line',
+                    label: 'Variograma Teórico',
+                    data: [], //add
+                    fill: false,
+                    pointHitRadius: 0,
+                    pointBorderWidth: 0,
+                    pointBackgroundColor: 'rgb(255, 0, 0)',
+                    backgroundColor: 'rgb(255, 0, 0)',
+                    borderColor: 'rgb(255, 0, 0)',
+                    tension: 0.1
+                }
+                ]
+            },
+            options: {
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Lags-Distancia (m)'
+                        },
+                        beginAtZero: true
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Semivarianza'
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+    <script src="/jsIndex.js/variables_g.js"></script>
+    <script src="/jsIndex.js/mapacalor.js"></script>
+    <script>
+        /**
+ * obtiene la informacion desde la base de datos
+ */ //obtener paramtros de la url
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+        //document.getElementById("nameCol").innerHTML = "" + getParameterByName("x");
+        var nameCol = getParameterByName("x");
+        var gid = getParameterByName("gid");
+        var fecha = getParameterByName("fecha");
+        console.log(nameCol, gid, fecha);
+        function getInfo() {
+            fetch("/info", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    x: nameCol,
+                    gid: gid,
+                    fecha: fecha
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    ovitrampas = data.ovi;
+                    zona = data.infoZona
+                    //prepareDatos();//prepara los datos antes de interpolar
+                    crearMapaDeCalor(zona);
+                    addTablaIndicador(ovitrampas);
+                    addMarkers();
+                })
+        }
+        //Carga la informacin para generar el mapa de calorl
+        getInfo();
+    </script>
 </body>
 
 </html>

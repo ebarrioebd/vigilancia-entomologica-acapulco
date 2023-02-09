@@ -195,7 +195,7 @@ const chartVariograma = new Chart(ctxVariograma, {
                 display: true,
                 title: {
                     display: true,
-                    text: 'Lags-Distancia (m)'
+                    text: 'Distancia (m)'
                 },
                 beginAtZero: true
             },

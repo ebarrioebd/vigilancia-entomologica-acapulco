@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Leaflet Ovitrampas</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/jquery.tooltip.css">
+    <style>
+    #myChart {
+        width: 600px;
+        height: 320px;
+    }
+
+    #rango {
+        width: 60px;
+        font-size: 15px;
+        font-family: fantasy;
+        text-align: center;
+    }
+
+    #id_radio {
+        border: solid;
+        color: white;
+        font-size: 17px;
+        /* font-family: inherit; */
+        background-color: #0100fa;
+        padding: 6px;
+    }
+    #map{
+        position: sticky !important; 
+        width: 100%; 
+        height: 400px;
+        box-shadow: -2px  13px 20px 7px #888;
+    }
+    </style>
+</head>
+
+<body>
+    <!--
+    <div class="col-12" style="height:100%">
+        <button id="ocultar">ocultar</button><button id="mostrar">Mostrar</button><canvas id="canvasMap" style="display: none;"></canvas>
+        <div id="map"></div> 
+    </div>
+    <img src="/images/loading2.gif" style="left: 40%;position: relative;width: 20%;height: 40%;margin-top: -50%;" id="imgLoading">
+    </div>
+    --> 
+        <div id="nomColInter">
+            <p id="nomColInterp"> </p><button onclick="showVariograma()">Ver Semivariograma</button>
+            <button id="ocultar">ocultar</button><button id="mostrar">Mostrar</button>
+        </div>
+        <div id="contendCSV">
+            <canvas id="canvasMap" style="display: none;"></canvas>
+            <div class="map" id="map"></div><img src="/images/loading2.gif"
+                style="left: 40%;position: relative;width: 20%;height: 40%;margin-top: -50%;" id="imgLoading">
+        </div>
+        <div id="id_variograma" style="display:none">
+        <div style="text-align: end;cursor: move;" id="moveVario"><button onclick="closeVariograma()"
+                style="border: none;background: #444444;"><img src="/images/close-button.png" height="35"
+                    width="35"></button></div>
+        <p id="VARIO_TITLE">Semivariograma</p>
+        <div id="grafdiv"> <canvas  id="variograma"></canvas></div>
+    </div>
+    <script>
+    document.getElementById("map").style.height = (screen.height - 120) + "px";
+    </script>
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+    <script src="/js/Leaflet.Control.Custom.js"> </script>
+    <script src="/js/jquery.tooltip.js"></script>
+    <script src="https://npmcdn.com/@turf/turf/turf.min.js"> </script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.0.2/math.js"> </script>
+    <script src="/jsIndex.js/info_zonas.js"></script>
+</body>
+
+</html>

@@ -18,13 +18,32 @@ var interpoladoresButton = L.control({ position: 'topleft' });
 var botonesControlCSV = L.control({ position: 'bottomleft' });
 var botonesControlInfo = L.control({ position: 'topright' });
 var botonesControlRango = L.control({ position: 'topleft' });
-botonesControlRango.onAdd = function() { // creación de los botones
+botonesControlRango.onAdd = function () { // creación de los botones
     var botones = L.DomUtil.create('div', 'class-css-botones');
     botones.innerHTML = "<div style='color: black;background:#34c234b5'>Porcentaje Bajo</div><div style='color: black;background:#d3d331b5'>Porcentaje Medio</div><div style='color: black;background:#ff0000b5'>Porcentaje Alto</div>"
     return botones;
 };
-botonesControlRango.addTo(map);
+//botonesControlRango.addTo(map);
+//add Controls Map
+interpoladoresButton.onAdd = function () {
+    var botones = L.DomUtil.create('div', 'class-css-botones');
+    botones.innerHTML = `<div id="id_radio">
+                    <p>Interpolador</p>
+                    <input type="radio" name="kriging" value="kriging" id="kriging" onClick="ck()"> Kriging <br>
+                    <input type="radio" name="idw" value="idw" id="idw" onClick="cidw()"> IDW <br>
+                    <!--<input type="radio" name="fbr" value="fbr" id="fbr" onClick="cfbr()" ochange="Funcion de Base Radial"> FBR </div>-->`;
+    //botones.innerHTML += ``; 
+    return botones;
+}
+interpoladoresButton.addTo(mapCSVInter);
 
+botonesControlCSV.onAdd = function () { // creación de los botones
+    var botones = L.DomUtil.create('div', 'class-css-botones');
+    botones.innerHTML = `<buttom  id="agregar-marcadoresCSV" class="btn btn-primary" style="background:'green'">Mostrar Marcadores</buttom>`;
+    botones.innerHTML += `<buttom  id="remover-marcadoresCSV" class="btn btn-warning">Ocultar Marcadores</buttom>`;
+    return botones;
+};
+botonesControlCSV.addTo(mapCSVInter); // adición del contenedor dentro del mapa
 /*
 const colors = ["#0017FE", "#0059FE", "#00BDFE", "#00FEFA", "#00FE5C", "#B5FE00", "#DBFE00", "#FEEF00",
     "#FEB100", "#FE7700", "#FE2E00"
@@ -185,7 +204,7 @@ function addTablaIndicador(data) {
         divRango += "<div id='rango' style='color:black;background:" + colors[i] + "'>" + v2 + "</div>";
         v2 = "";
     }
-    botonesControlInfo.onAdd = function() { // creación de los botones
+    botonesControlInfo.onAdd = function () { // creación de los botones
         var botones = L.DomUtil.create('div', 'class-css-botones');
         botones.innerHTML += divRango
         return botones;
@@ -215,7 +234,7 @@ function vt(nugget, sillPartial, rango, h) {
 }
 //genera valores del variograma teorico que se ha ajustado 
 function dataVT(nugget, sillPartial, rango) {
-    rango=rango+200
+    rango = rango + 200
     var x = []; //h
     var y = []; //variogramas teorico
     var cantP = 200
@@ -239,7 +258,7 @@ function crearMapaDeCalor(zona) {
     zonaCoord = zona[0].geometry.coordinates[0]
     console.log("1")
     //console.log("zonas",zona);  
-    zonaCoord[0].forEach(function(point) {
+    zonaCoord[0].forEach(function (point) {
         positions.push([point[1], point[0]]);
     });
     mapCSVInter.removeLayer(scope);
@@ -270,7 +289,7 @@ function crearMapaDeCalor(zona) {
         console.log("Data:", event.data);
         var zi = event.data.zi;
         var mD = event.data.mD;
-        var Imoran=correlacio(mD,event.data.z)
+        var Imoran = correlacio(mD, event.data.z)
         var h = event.data.h;
         var nugget = event.data.nugget,
             rango = event.data.rango,
@@ -289,7 +308,7 @@ function crearMapaDeCalor(zona) {
             B = zi.length / A;
             //console.log("!B")
         }
-        let opacidad_img=0.7;
+        let opacidad_img = 0.7;
         imgKrig = L.imageOverlay(creaImagen(A, B, zi, "canvasMap", ovitrampas), [
             [cajaMulti[1], cajaMulti[0]],
             [cajaMulti[3], cajaMulti[2]]
@@ -343,31 +362,11 @@ function ocultarMarcadores() {
 //redireccionar a Ventana de Mapa de calor
 function ir_url(n, c_id, type_dat) { //value 
     document.getElementById("interpolarCSV").style.display = "";
-    document.getElementById("imgLoading").style.display = ""; 
-    //add Controls Map
-    interpoladoresButton.onAdd = function() {
-        var botones = L.DomUtil.create('div', 'class-css-botones');
-        botones.innerHTML = `<div id="id_radio">
-                    <p>Interpolador</p>
-                    <input type="radio" name="kriging" value="kriging" id="kriging" onClick="ck()"> Kriging <br>
-                    <input type="radio" name="idw" value="idw" id="idw" onClick="cidw()"> IDW <br>
-                    <!--<input type="radio" name="fbr" value="fbr" id="fbr" onClick="cfbr()" ochange="Funcion de Base Radial"> FBR </div>-->`;
-        //botones.innerHTML += ``; 
-        return botones;
-    }
-    interpoladoresButton.addTo(mapCSVInter);
-
-    botonesControlCSV.onAdd = function() { // creación de los botones
-        var botones = L.DomUtil.create('div', 'class-css-botones');
-        botones.innerHTML = `<buttom  id="agregar-marcadoresCSV" class="btn btn-primary" style="background:'green'">Mostrar Marcadores</buttom>`;
-        botones.innerHTML += `<buttom  id="remover-marcadoresCSV" class="btn btn-warning">Ocultar Marcadores</buttom>`;
-        return botones;
-    };
-    botonesControlCSV.addTo(mapCSVInter); // adición del contenedor dentro del mapa
-    document.getElementById('agregar-marcadoresCSV').addEventListener('click', function() {
+    document.getElementById("imgLoading").style.display = "";
+    document.getElementById('agregar-marcadoresCSV').addEventListener('click', function () {
         groupMakersCSV.addTo(mapCSVInter)
     })
-    document.getElementById('remover-marcadoresCSV').addEventListener('click', function() {
+    document.getElementById('remover-marcadoresCSV').addEventListener('click', function () {
         groupMakersCSV.remove();
     })
 
@@ -419,12 +418,12 @@ function ir_url(n, c_id, type_dat) { //value
         crearMapaDeCalor(zona);
     } else {
         fetch("/getZona", {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    gid: [c_id] //[paramsValue[0].zona_id]
-                })
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                gid: [c_id] //[paramsValue[0].zona_id]
             })
+        })
             .then(res => res.json())
             .then(data => {
                 zona = data.zona; ///agrega las zonas al mapa 
@@ -448,11 +447,11 @@ function mapaCalor(n, id, f, type_dat) {
 }
 
 
-document.getElementById('mostrarIMG').addEventListener("click", function() {
+document.getElementById('mostrarIMG').addEventListener("click", function () {
     //layerGroup.addTo(map);
     imgOpaci.addTo(mapCSVInter);
 })
-document.getElementById('ocultarIMG').addEventListener("click", function() {
+document.getElementById('ocultarIMG').addEventListener("click", function () {
     //map.removeLayer(layerGroup)
     mapCSVInter.removeLayer(imgOpaci);
 });

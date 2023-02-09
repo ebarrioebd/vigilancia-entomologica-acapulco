@@ -302,7 +302,7 @@ function crearMapaDeCalor(zona) {
         squareGrid.features[i].properties.centro = turf.centerOfMass(squareGrid.features[i]).geometry.coordinates;
     }
     map.fitBounds(scope.getBounds());
-    const worker = new Worker('/interpoladoresjs/interpolar.js');
+    const worker = new Worker('/interpoladoresjs/interpolar_sn_reeplace.js');
     worker.postMessage({ ovi: ovitrampas, zona: zonaCoord, squareGrid: squareGrid, cajaMulti: cajaMulti, tamCuadro: tamCuadro });
     worker.onmessage = (event) => {
         console.log("enenDAta", event.data);
