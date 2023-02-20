@@ -15,9 +15,9 @@
 </head>
 
 <body>
-    <div class="container" id="cont" style="height: 100%;   ">
-        <div class="row" id="head_main" >
-            <div class="col-md-2"  class="col-xs-6" id="sect01">
+    <div class="container" id="cont" style="height: 100%; filter: blur(0px); ">
+        <div class="row" id="head_main">
+            <div class="col-md-2" class="col-xs-6" id="sect01">
                 <p>SISTEMA DE VIGILANCIA</p>
             </div>
             <div class="col-md-8" class="col-xs-6" id="sect02" style="cursor: pointer;" onclick="fileSelect()">
@@ -29,13 +29,13 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-2" class="col-xs-0"  id="sect0">
+            <div class="col-md-2" class="col-xs-0" id="sect0">
                 <p> </p>
             </div>
         </div>
 
         <div class="row" id="center_main" style="height:59.5vh">
-            <div class="col-md-2" class="col-sm-12" id="sect11" >
+            <div class="col-md-2" class="col-sm-12" id="sect11">
                 <div id="selectCasillas">
                     <div class="row">
                         <div class="col-md-9">
@@ -61,7 +61,7 @@
                 </div>
             </div>
             <div class="col-md-6" class="col-sm-12" id="sect12" style="padding: 8px;  margin: 0;">
-                <canvas id="canvasMap"style="display: none;"></canvas>
+                <canvas id="canvasMap" style="display: none;"></canvas>
                 <div class="map" style="height: 56vh" id="map_c1"></div>
             </div>
             <div class="col-md-2" class="col-sm-12" id="sect13">
@@ -81,14 +81,18 @@
                     <p>Zonas</p>
                     <hr>
                 </div>
-                <div class="row" id="style-15" style="overflow: scroll;height:93%">
+                <div class="row" id="style-15" style="overflow: scroll;height:86%">
                     <div id="zona_name"></div>
+                </div>
+                <div>
+                    <button style="width: -webkit-fill-available;height: 31px;font-size: initial;font-family: 'Fredoka';" onclick="mostrarVentanaEstDesc()">Estadisticos Descriptivos</button>
                 </div>
             </div>
         </div>
         <div class="row" style="height:35vh">
-            <div class="col-md-1" id="sect21"><button id="b_PromMes" onclick="getDatMesProm()">Promedio por
-                    Fechas</button></div>
+            <div class="col-md-1" id="sect21">
+                <button id="b_PromMes" onclick="getDatMesProm()">Promedio por Fechas</button>
+            </div>
             <div class="col-md-5" id="sect2"><canvas id="graphPM"
                     style="width: -webkit-fill-available; height: 34vh;"></canvas>
                 <!--input(type="text", name="cvegeoedo", value="01", id="cvegeoedo"  accept=".csv" required)-->
@@ -177,18 +181,52 @@
                 style="border: none;background: #444444;"><img src="/images/close-button.png" height="35"
                     width="35"></button></div>
         <p id="VARIO_TITLE">Semivariograma</p>
-        <div id="grafdiv"> <canvas  id="variograma"></canvas></div>
+        <div id="grafdiv"> <canvas id="variograma"></canvas></div>
     </div>
     <div style="display:none" id="divError">
-        <div style="text-align: end"><button onclick="closeVerror()" style="border: none;background: red;"><img src="/images/close-button.png" height="35" width="35"></button></div>
+        <div style="text-align: end"><button onclick="closeVerror()" style="border: none;background: red;"><img
+                    src="/images/close-button.png" height="35" width="35"></button></div>
         <h2>Error</h2>
         <br>
         <p id="msg"></p>
     </div>
-
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script> 
+    <div id="ventanaEstDesc" style="display: none;">
+        <div style="text-align: end;cursor: move;" id="moveVario"><button onclick="closeTableDescri()"
+                style="border: none;background: #444444;"><img src="/images/close-button.png" height="35"
+                    width="35"></button></div>
+        <div style="height: 90%; overflow-y: scroll;">
+            <table class="default">
+                <tr>
+                    <th>gid</th>
+                    <th>Colonia</th>
+                    <th>Cantidad de Ovitrampas</th>
+                    <th>Total de Huevos Registrados</th>
+                    <th>Promedio</th>
+                    <th>Varianza</th>
+                    <th>Desviación Estándar</th>
+                    <th>Coeficiente de Variación</th>
+                    <th>Mínimo </th>
+                    <th>Máximo</th>
+                    <th>Rango</th>
+                    <th>Histograma de Frecuencias</th>
+                </tr>
+                <tbody id="decriptivo_table_body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="ventanaHistogramaDeFrecuencias" style="display: none;">
+        <div style="text-align: end;" id="moveVario"><button onclick="closeHistograma()"
+                style="border: none;background: #44444400;"><img src="/images/close-button.png" height="35"
+                    width="35"></button></div>
+        <div style=" height: 90%;  text-align: -webkit-center;">
+            <canvas id="histogramaChart"></canvas>
+        </div>
+    </div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script>
     <script src="/js/chart-loader.js"></script>
-    <script src="/js/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!--<script src="/js/chart.js"></script>-->
     <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
     <script src="/js/turf.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
@@ -211,8 +249,9 @@
     <script src="/jsIndex.js/funct_load_data.js"></script>
     <script src="/jsIndex.js/indicadores.js"></script>
     <script src="/jsIndex.js/addZonaMapa.js"></script>
-    <script src="/jsIndex.js/mapacalor.js"></script> 
+    <script src="/jsIndex.js/mapacalor.js"></script>
     <script src="/jsIndex.js/promediarMesDia.js"></script>
+    <script src="/interpoladoresjs/est_descrip.js"></script>
 
 </body>
 

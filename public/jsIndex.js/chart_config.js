@@ -33,13 +33,13 @@ const myLineChart = new Chart(ctx, config);
  */
 const ctx_pop = document.getElementById("graph_pop").getContext('2d');
 var gradient = ctx.createLinearGradient(0, 0, 0, 400);
-gradient.addColorStop(0, "rgba(254,0,0,0.7)")
-gradient.addColorStop(0.1, "rgba(254,62,0,0.7)")
-gradient.addColorStop(0.2, "rgba(254,146,0,0.7)")
+gradient.addColorStop(0, "rgba(254,0,0,0.9)")
+gradient.addColorStop(0.1, "rgba(254,62,0,0.9)")
+gradient.addColorStop(0.2, "rgba(254,146,0,0.9)")
 gradient.addColorStop(0.3, "rgba(254,242,0,0.7)")
 gradient.addColorStop(0.4, "rgba(204,254,0,0.7)")
-gradient.addColorStop(0.7, "rgba(123,254,0,0.7)")
-gradient.addColorStop(1, "rgba(0,254,0,0.7)")
+gradient.addColorStop(0.7, "rgba(123,254,0,0.9)")
+gradient.addColorStop(1, "rgba(0,254,0,0.9)")
 let config_pop = {
     data: {
         labels: [],
@@ -169,24 +169,24 @@ const chartVariograma = new Chart(ctxVariograma, {
     data: {
         labels: [], //add
         datasets: [{
-                type: 'bubble',
-                data: [], //add
-                label: 'Variograma Experimental',
-                options: {},
-                backgroundColor: 'rgb(0, 0, 255)'
-            },
-            {
-                type: 'line',
-                label: 'Variograma Teórico',
-                data: [], //add
-                fill: false,
-                pointHitRadius: 0,
-                pointBorderWidth: 0,
-                pointBackgroundColor: 'rgb(255, 0, 0)',
-                backgroundColor: 'rgb(255, 0, 0)',
-                borderColor: 'rgb(255, 0, 0)',
-                tension: 0.1
-            }
+            type: 'bubble',
+            data: [], //add
+            label: 'Variograma Experimental',
+            options: {},
+            backgroundColor: 'rgb(0, 0, 255)'
+        },
+        {
+            type: 'line',
+            label: 'Variograma Teórico',
+            data: [], //add
+            fill: false,
+            pointHitRadius: 0,
+            pointBorderWidth: 0,
+            pointBackgroundColor: 'rgb(255, 0, 0)',
+            backgroundColor: 'rgb(255, 0, 0)',
+            borderColor: 'rgb(255, 0, 0)',
+            tension: 0.1
+        }
         ]
     },
     options: {
@@ -210,6 +210,74 @@ const chartVariograma = new Chart(ctxVariograma, {
         }
     }
 });
+var charHistograma = document.getElementById("histogramaChart");
+var densityData = {
+    label: 'Histograma de Frecuencias',
+    data: [],//hist.frec,
+    backgroundColor: ['rgba(0, 0, 255, 0.8)']
+};
+var barChartHistograma = new Chart(charHistograma, {
+    type: 'bar',
+    data: {
+        labels: [],// hist.labelClass,
+        datasets: [densityData]
+    }, options: {
+        scales: {
+            x: {
+                grid: {
+                    borderColor: "rgb(0,0,0)",
+                    borderWidth: 3,
+                },
+                ticks: {
+                    color: "black"
+                },
+                title: {
+                    display: true,
+                    text: 'Clases'
+                },
+                beginAtZero: true,
+                ticks: {
+                    font: {
+                        size: 16 
+                    }
+                }
+            },
+            y: {
+                grid: {
+                    borderColor: "rgb(0,0,0)",
+                    borderWidth: 3,
+                },
+                ticks: {
+                    color: "black"
+                },
+                title: {
+                    display: true,
+                    text: 'Frecuencia',
+                    size: 16 
+                },
+                beginAtZero: true, 
+                ticks: {
+                    font: {
+                        size: 16 
+                    }
+                }
+            }
+        }, plugins: {
+            legend: {
+                display: true,
+                labels: {
+                    color: "rgb(0,0,0)",
+                    boxWidth: 0,
+                    font: {
+                        size: 18,
+                        family: "'Fredoka',sans-serif"
+                    }
+                }
+            }
+        },
+    }
+});
+Chart.defaults.font.size = 15;
 /*
 const ctxVariograma = document.getElementById("variograma").getContext("2d");
 const configVariograma = {

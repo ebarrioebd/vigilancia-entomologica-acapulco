@@ -308,7 +308,7 @@ function crearMapaDeCalor(zona) {
             B = zi.length / A;
             //console.log("!B")
         }
-        let opacidad_img = 0.7;
+        let opacidad_img = 0.9;
         imgKrig = L.imageOverlay(creaImagen(A, B, zi, "canvasMap", ovitrampas), [
             [cajaMulti[1], cajaMulti[0]],
             [cajaMulti[3], cajaMulti[2]]
@@ -434,6 +434,7 @@ function ir_url(n, c_id, type_dat) { //value
 };
 
 function mapaCalor(n, id, f, type_dat) {
+    
     console.log("mapaCalor(" + n + "," + id + "," + f + "," + type_dat + ")")
     if (type_dat === "type_bd") {
         console.log(n, id, f)

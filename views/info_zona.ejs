@@ -185,11 +185,17 @@
                 .then(res => res.json())
                 .then(data => {
                     ovitrampas = data.ovi;
+                    console.log("ovitrampas::", ovitrampas)
+                    var csvtxt = ""
+                    for (var i = 0; i < ovitrampas.length; i++) {
+                        csvtxt +="" + ovitrampas[i].latitud + "," + ovitrampas[i].longitud + "," + ovitrampas[i].gid + "," + ovitrampas[i].nom_col + "," + ovitrampas[i].cantidad_huevos + ", 2022-10-11\n"
+                    }
+                    console.log(csvtxt)
                     zona = data.infoZona
                     //prepareDatos();//prepara los datos antes de interpolar
                     crearMapaDeCalor(zona);
                     addTablaIndicador(ovitrampas);
-                    addMarkers();
+                    //addMarkers();
                 })
         }
         //Carga la informacin para generar el mapa de calorl

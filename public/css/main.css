@@ -1,12 +1,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Fredoka&display=swap");
+
 /*.map {
     position: sticky !important;
     width: 100%;
     height: 100%; 
 }*/
-#head_main{
+#head_main {
     height: 5.5vh !important;
 }
+
 body,
 html,
 .container {
@@ -273,11 +275,11 @@ b {
     border-radius: 10px;
     background-color: #fff;
     background-image: -webkit-gradient(linear,
-        40% 0%,
-        75% 84%,
-        from(#4d9c41),
-        to(#19911d),
-        color-stop(0.6, #54de5d));
+            40% 0%,
+            75% 84%,
+            from(#4d9c41),
+            to(#19911d),
+            color-stop(0.6, #54de5d));
 }
 
 .scrollbar {
@@ -337,12 +339,14 @@ b {
     position: fixed;
     top: 5%;
     left: 10%;
-   /*height: 80vh;*/
+    /*height: 80vh;*/
     border: outset #fffefe 5px;
     background: #444444;
 }
 
-#sect01,#sect02 ,#sect0{
+#sect01,
+#sect02,
+#sect0 {
     align-self: center;
     border: groove;
     height: 4.5vh;
@@ -361,13 +365,22 @@ b {
     height: 75%;
 }
 
-#sect11,#sect12,#sect13,#sect14{
+#sect11,
+#sect12,
+#sect13,
+#sect14 {
     height: 100%;
 }
 
-#sect11,#sect12,#sect13,#sect14,
-#sect2,#sect21,
-#sect01,#sect02,#sect0 {
+#sect11,
+#sect12,
+#sect13,
+#sect14,
+#sect2,
+#sect21,
+#sect01,
+#sect02,
+#sect0 {
     border: outset #525252 0.5vh;
     background: #313030;
     border-radius: 10px;
@@ -378,7 +391,8 @@ b {
     background: #9595958c;
 }
 
-#sect2,#sect21{
+#sect2,
+#sect21 {
     height: 100%;
 }
 
@@ -554,7 +568,7 @@ body {
 }
 
 #divError {
-    height:auto;
+    height: auto;
     background: #ff0000;
     position: fixed;
     z-index: 100;
@@ -566,15 +580,15 @@ body {
 
 /**/
 #popup {
-  width: 254px;
+    width: 254px;
     border-color: white;
     color: white;
     font-family: system-ui;
 }
 
 #name_col {
-  border-bottom: solid;
-  font-size: 18px;
+    border-bottom: solid;
+    font-size: 18px;
     color: #000101;
     text-align: center;
     font-family: ui-sans-serif;
@@ -582,21 +596,21 @@ body {
 
 #div_pop {
     border-radius: 10px 10px 0px 0px;
-        font-size: 15px;
+    font-size: 15px;
     background: #313030;
     font-family: sans-serif;
     text-align: center;
 }
 
-#num_pop {    
-  border: solid 5px #313030;
-  border-radius: 0px 0px 10px 10px;
+#num_pop {
+    border: solid 5px #313030;
+    border-radius: 0px 0px 10px 10px;
 }
 
 #num_porcent {
-      font-size: 22px;
+    font-size: 22px;
     color: black;
-    font-family: fantasy; 
+    font-family: fantasy;
     /*-webkit-text-stroke: white 1px;*/
 }
 
@@ -610,6 +624,37 @@ body {
 }
 
 #mapaCalor:hover {
-    background-color: #505050a7; 
-      color: white;
+    background-color: #505050a7;
+    color: white;
+}
+
+#ventanaEstDesc {
+    font-size: medium;
+    display: block;
+    width: 80%;
+    height: 510px;
+    position: fixed;
+    top: 10%;
+    left: 10%;
+    font-family: monospace;
+    height: 80vh;
+    border: outset #fffefe 5px;
+    background: #444444;
+}
+#ventanaHistogramaDeFrecuencias{
+    font-size: medium;
+    display: block;
+    width: 80%;
+    height: 510px;
+    position: fixed;
+    top: 10%;
+    left: 10%;
+    font-family: monospace;
+    height: 80vh;
+    border: outset #fffefe 5px;
+    background:#f1f1f1;
+}
+#histogramaChart{
+    height: -webkit-fill-available !important;
+    /*width: -webkit-fill-available !important;*/
 }

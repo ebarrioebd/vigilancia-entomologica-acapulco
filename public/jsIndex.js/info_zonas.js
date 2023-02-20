@@ -359,7 +359,8 @@ function getInfo() {
         })
         .then(res => res.json())
         .then(data => {
-            ovitrampas = data.ovi;
+            ovitrampas = data.ovi; 
+           
             zona = data.infoZona
             //prepareDatos();//prepara los datos antes de interpolar
             crearMapaDeCalor(zona);

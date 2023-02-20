@@ -354,7 +354,6 @@ function AddMapCsv() {
 
 }
 //fin de leer un CSV 
-
 //mostrar datos del archivo de colonias(Acapulco)
 function abrirColoniasInfo(){
     window.open(window.location.origin + "/info_colonias_acapulco_inegi_2010", 'popup', 'width=' + (screen.width - 300) + ', height=' + (screen.height - 100) + ', left=' + 10 + ', top=' + 10 + '');

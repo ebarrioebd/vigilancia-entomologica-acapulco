@@ -60,7 +60,30 @@ function colorRGB() {
     var coolor = "(" + generarNumero(255) + "," + generarNumero(255) + "," + generarNumero(255) + ")";
     return "rgb" + coolor;
 }
-
+function mostrarVentanaEstDesc() {
+    document.getElementById("cont").style.filter="blur(14px)"
+	document.getElementById("ventanaEstDesc").style.display = ""
+    
+} 
+function closeTableDescri() {
+    document.getElementById("cont").style.filter="blur(0px)"
+    document.getElementById("ventanaEstDesc").style.display = "none"
+}
+function createTablaDescriptivos(data) {
+    var tr = ""
+    console.log(data.gid.length)
+    let dh = []
+    for (var i = 0; i < data.gid.length; i++) {
+        dh = data.cant_h[i].sort((a, b) => { return a - b })
+        tr += `<tr>
+           <td>${data.gid[i]}</td><td>${data.nom_col[i]}</td><td>${data.cant_ovi[i]}</td><td>${data.total_huevos[i]}</td>
+           <td>${data.media[i]}</td><td>${data.varianza[i]}</td><td>${data.desviacions_estandar[i]}</td>
+           <td>${data.coef_variacion[i]}%</td><td>${dh[0]}</td><td>${dh[dh.length - 1]}</td><td>${dh[dh.length - 1] - dh[0]}</td>
+           <td><button onclick="calcularHistograma(${i})">Ver Histograma</button></td>
+        </tr>`;
+    }
+    document.getElementById("decriptivo_table_body").innerHTML = tr
+}
 function groupOvi(arr) {
     //console.log("arr",arr)
     let a = [
@@ -79,9 +102,27 @@ function groupOvi(arr) {
 }
 var colorsL = [] //color de cada labels 
 //generar indicadores entomologicos
-async function indicadores(inf_ovi, _zona, type_dat) {
+function varza(m, x) {
+    let suma = 0
+    for (let i = 0; i < x.length; i++) {
+        suma += Math.pow(x[i] - m, 2);
+    }
+    return [suma / (x.length - 1), Math.sqrt(suma / x.length - 1)]
+}
+var Est_Des_Data = {
+    gid: [],//
+    cant_ovi: [],//
+    cant_h: [],
+    nom_col: [],//
+    media: [],//
+    total_huevos: [],//
+    varianza: [],
+    desviacions_estandar: [],
+    coef_variacion: [],
+}
+function indicadores(inf_ovi, _zona, type_dat) {
     console.log("TypeDat:" + type_dat)
-    console.log("inf_ovi::",inf_ovi)
+    console.log("inf_ovi::", inf_ovi)
     _zona = [];
     _PH = [] //Promedio de Huevos
     let c_pop = { //val para chart porcentaje de ovitrampa positiva
@@ -89,6 +130,7 @@ async function indicadores(inf_ovi, _zona, type_dat) {
         pop: [],
         gid: []
     }
+
     let sum_cant; //cantidad de huevos
     let cant_ovi = 0; //cuenta las ovitrampas
     let n_c = [] //almacena la cantidad de huevo de cada colonia
@@ -97,33 +139,40 @@ async function indicadores(inf_ovi, _zona, type_dat) {
     let cant_ovi_colonia = [];
     let cant_t_ovi = 0; //variable para almacenar el total de oivitrampas
     for (var j = 0; j < inf_ovi.length; j++) {
+        Est_Des_Data.cant_h[j] = []
+        Est_Des_Data.nom_col[j] = inf_ovi[j][0].nom_col//add nom col
+        Est_Des_Data.gid[j] = inf_ovi[j][0].gid//add gid a json
+        Est_Des_Data.cant_ovi[j] = inf_ovi[j].length//cantida ovi de cada colonia
         cant_ovi += inf_ovi[j].length;
         sum_cant = 0;
-        if (inf_ovi[j].length > 0) { // ooption ::  && !isNaN(parseInt(inf_ovi[j][0]["gid"]))
-            cant_ovi_colonia.push(inf_ovi[j].length);
-            cant_t_ovi = inf_ovi[j].length;
-            for (var i = 0; i < inf_ovi[j].length; i++) {
-                if (!isNaN(inf_ovi[j][i].cantidad_huevos)) {
-                    t_huevos += inf_ovi[j][i].cantidad_huevos;
-                    sum_cant += inf_ovi[j][i].cantidad_huevos;
-                }
-                if (inf_ovi[j][i].cantidad_huevos < 10 || isNaN(inf_ovi[j][i].cantidad_huevos)) {
-                    cant_t_ovi -= 1;
-                }
+
+        cant_ovi_colonia.push(inf_ovi[j].length);
+        cant_t_ovi = inf_ovi[j].length;
+        for (var i = 0; i < inf_ovi[j].length; i++) {
+            if (!isNaN(inf_ovi[j][i].cantidad_huevos)) {
+                Est_Des_Data.cant_h[j][i] = inf_ovi[j][i].cantidad_huevos
+                t_huevos += inf_ovi[j][i].cantidad_huevos;
+                sum_cant += inf_ovi[j][i].cantidad_huevos;//suma los h de cada colonia
             }
-            c_pop.nom_col.push(inf_ovi[j][0].nom_col);
-            c_pop.gid.push(inf_ovi[j][0].gid);
-            c_pop.pop.push(parseInt((cant_t_ovi * 100) / inf_ovi[j].length))
-            n_c.push(sum_cant)
-            _zona.push(inf_ovi[j][0].gid);
-            colorsL.push(colorRGB());
-            cant_t_ovi = 0;
-            _PH.push({ ph: sum_cant / (inf_ovi[j].length), sumaH: sum_cant, nom_col: inf_ovi[j][0].nom_col, fecha: inf_ovi[j][0].fecha, cant_ovi: inf_ovi[j].length });
-        } else {
-            console.log("gid:" + inf_ovi[j][0]["gid"] + " is " + isNaN(parseInt(inf_ovi[j][0]["gid"])), inf_ovi[j].length)
+            if (inf_ovi[j][i].cantidad_huevos <= 0 || isNaN(inf_ovi[j][i].cantidad_huevos)) {
+                cant_t_ovi -= 1;
+            }
         }
-        //
-    } 
+        Est_Des_Data.media[j] = parseInt(sum_cant / inf_ovi[j].length);
+        Est_Des_Data.total_huevos[j] = sum_cant;
+        Est_Des_Data.varianza[j] = parseInt(varza(Est_Des_Data.media[j], Est_Des_Data.cant_h[j]));
+        Est_Des_Data.desviacions_estandar[j] = parseInt(Math.sqrt(Est_Des_Data.varianza[j]));
+        Est_Des_Data.coef_variacion[j] = parseInt(Est_Des_Data.desviacions_estandar[j] / Math.abs(Est_Des_Data.media[j]) * 100);
+        c_pop.nom_col.push(inf_ovi[j][0].nom_col);
+        c_pop.gid.push(inf_ovi[j][0].gid);
+        c_pop.pop.push(parseInt((cant_t_ovi * 100) / inf_ovi[j].length))
+        n_c.push(sum_cant)
+        _zona.push(inf_ovi[j][0].gid);
+        colorsL.push(colorRGB());
+        cant_t_ovi = 0;
+        _PH.push({ ph: sum_cant / (inf_ovi[j].length), sumaH: sum_cant, nom_col: inf_ovi[j][0].nom_col, fecha: inf_ovi[j][0].fecha, cant_ovi: inf_ovi[j].length });
+    }
+
 
     //var aux_suma = 0
     for (var i = 0; i < inf_ovi.length; i++) {
@@ -132,10 +181,10 @@ async function indicadores(inf_ovi, _zona, type_dat) {
     }
     //console.log("Porcentaje:", p_n_c, "Suma:", aux_suma)
     //dar valore a las siguientes varibles definidas como variables_G
-    nombres_de_colonias=c_pop.nom_col;
-    cantidad_h_de_cada_colonia=n_c;
-    cantidad_ovi_de_cada_colonia=cant_ovi_colonia;
-    gid_de_cada_colonnia=c_pop.gid;
+    nombres_de_colonias = c_pop.nom_col;
+    cantidad_h_de_cada_colonia = n_c;
+    cantidad_ovi_de_cada_colonia = cant_ovi_colonia;
+    gid_de_cada_colonnia = c_pop.gid;
     //
     document.getElementById("n_ovi").innerHTML = cant_ovi;
     myLineChart.data.datasets[0].data = p_n_c //ph;
@@ -144,15 +193,81 @@ async function indicadores(inf_ovi, _zona, type_dat) {
     myLineChart.update();
     //graph_POP
     chart_pop.data.labels = c_pop.nom_col;
-    chart_pop.data.datasets[0].data = c_pop.pop; 
+    chart_pop.data.datasets[0].data = c_pop.pop;
     chart_pop.update();
     addZonaName("zona_name", c_pop.nom_col, cant_ovi_colonia, colorsL, n_c)
     graphPromedioHoy(_PH);
     console.log("Agregando zona..")
     console.log("AddZona::::", _zona)
-    console.log("getZona()",c_pop)
+    console.log("getZona()", c_pop)
     getZonas(_zona, c_pop, type_dat)
     console.log("Zonas agregadas..")
     addOvi(inf_ovi);
+    console.log(Est_Des_Data)
+    createTablaDescriptivos(Est_Des_Data)
 }
- 
+function sumClass(arr) {
+    let suma = 0
+    for (var i = 0; i < arr.length; i++) {
+        suma += arr[i]
+    }
+    return suma
+}
+function crearHistogramaDeFrecuencias(od) {
+    var dataVal = []
+    dataVal.push(od[0])
+    var auxDataVal = od[0]
+    for (var i = 1; i < od.length; i++) {
+        if (auxDataVal != od[i]) {
+            dataVal.push(od[i]);
+            auxDataVal = od[i]
+        }
+    }
+
+    var contador = []
+    var auxcontador = 0
+
+    for (var i = 0; i < dataVal.length; i++) {
+        auxcontador = 0
+        for (var j = 0; j < od.length; j++) {
+            if (dataVal[i] == od[j]) {
+                auxcontador++;
+            }
+        }
+        contador[i] = auxcontador;
+    }
+    //console.log(contador)
+    var inter = Math.ceil(Math.sqrt(od.length));
+    //console.log("valored del array:", dataVal, "\ncantidad de V:", dataVal.length, "canta:", dataVal.length / inter)
+
+    var tamClases = Math.round(dataVal.length / inter)
+    //console.log("Tamano de classes:", tamClases, "Cantidad de Intervalos:", inter)
+    var frecuencia = []
+    var interClass = []
+
+    for (var i = 0; i < inter - 1; i++) {
+        frecuencia[i] = sumClass(contador.slice(tamClases * i, tamClases * (i + 1)))
+        if (i < inter - 1) {
+            interClass[i] = dataVal[tamClases * i] + "-" + (dataVal[(tamClases * (i + 1))] - 1)
+        } else {
+            interClass[i] = dataVal[tamClases * i] + "-" + dataVal[(tamClases * (i)) + 1]
+        }
+    }
+    frecuencia.push(sumClass(contador.slice(tamClases * (inter - 1))))
+    interClass.push(">" + dataVal[tamClases * (inter - 1)])
+
+    return { frec: frecuencia, labelClass: interClass }
+
+
+}
+function calcularHistograma(index) {
+    //console.log(index)
+    //console.log("Datos Analizar:",Est_Des_Data.cant_h[index])
+    var hist = crearHistogramaDeFrecuencias(Est_Des_Data.cant_h[index])
+    document.getElementById("ventanaHistogramaDeFrecuencias").style.display = "";
+    barChartHistograma.data.labels =hist.labelClass;
+    barChartHistograma.data.datasets[0].data = hist.frec; 
+    barChartHistograma.update();
+    console.log(hist)
+}
+function closeHistograma(){document.getElementById("ventanaHistogramaDeFrecuencias").style.display = "none";}

@@ -6,10 +6,6 @@ router.get("/", (req, res) => {
     res.redirect("/map");
 })
 router.get("/map", (req, res) => { res.render("index") })
-
-router.get("/nada",(req,res)=>{
-    res.send("<h1>NADA...</h1>")
-})
-
+ 
 
 module.exports = router;

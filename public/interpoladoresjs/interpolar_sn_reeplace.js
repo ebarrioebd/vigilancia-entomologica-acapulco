@@ -1,5 +1,6 @@
 //interpolador IDW
 function Zi(centro, puntos, exp) {
+    exp=2
     var d = 0;
     var s1 = 0// new Array();
     var s2 = 0// new Array();
@@ -65,13 +66,9 @@ function invM(matriz) {
 }
 //fin de invertir matriz
 
-
 function c(o, b) {
     console.log(o, b);
 }
-
-
-
 function transpose(matrix) {
     const rows = matrix.length,
         cols = matrix[0].length;
