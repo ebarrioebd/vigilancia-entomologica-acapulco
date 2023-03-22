@@ -49,10 +49,13 @@ const colors = ["#0017FE", "#0059FE", "#00BDFE", "#00FEFA", "#00FE5C", "#B5FE00"
     "#FEB100", "#FE7700", "#FE2E00"
 ];
 */
+//
 
 const colors = ["#006837", "#1a9850", "#66bd63", "#a6d96a", "#d9ef8b", "#ffffbf", "#fee08b", "#fdae61",
     "#f46d43", "#d73027", "#a50026"
 ];
+
+//const colors = ["#2791c5","#5fa2b3","#8cb8a4","#8cb8a4","#d6e37d","#f9fa64","#fbce52","#fba440","#e87329","#f14d1e","#e71914"];
 /*
 const colors = ["#190449","#1328e1","#005ff4","#7386f1","#b9ecf1","#f6fca1","#fd5316","#ff1006","#df140f","#6d0c0f"]
 */
@@ -229,18 +232,19 @@ function onError(e) {
     //alert(['ERROR: Line ', e.lineno, ' in ', e.filename, ': ', e.message].join(''))
 }
 //variograma Exponencial Teorico
-function vt(nugget, sillPartial, rango, h) {
+function vt(nugget, sillPartial, rango, h,beta) {
+    //return beta*(1.0 - Math.exp(-(1.0 / (1 / 3)) * h / rango))
     return nugget + sillPartial * (1.0 - Math.exp(-(1.0 / (1 / 3)) * h / rango))
 }
 //genera valores del variograma teorico que se ha ajustado 
-function dataVT(nugget, sillPartial, rango) {
+function dataVT(nugget, sillPartial, rango,beta) {
     rango = rango + 200
     var x = []; //h
     var y = []; //variogramas teorico
     var cantP = 200
     var aument = rango / cantP;
     for (var i = 1; i < cantP + 1; i++) {
-        y[i] = vt(nugget, sillPartial, rango, i * aument);
+        y[i] = vt(nugget, sillPartial, rango, i * aument,beta);
         x[i] = i * aument;
     }
     return [y, x]
@@ -280,7 +284,7 @@ function crearMapaDeCalor(zona) {
     }
     mapCSVInter.fitBounds(scope.getBounds());
     //creamos el worker 
-    const worker = new Worker('/interpoladoresjs/interpolar_sn_reeplace.js');
+    const worker = new Worker('/interpoladoresjs/interpolacion.js');
     //manejamos los errores 
     worker.addEventListener('error', onError, false);
     //iniciamos el worker
@@ -289,8 +293,9 @@ function crearMapaDeCalor(zona) {
         console.log("Data:", event.data);
         var zi = event.data.zi;
         var mD = event.data.mD;
-        var Imoran = correlacio(mD, event.data.z)
+        //var Imoran = correlacio(mD, event.data.z)
         var h = event.data.h;
+        var beta=event.data.beta//valor para solo cill parcial
         var nugget = event.data.nugget,
             rango = event.data.rango,
             sill = event.data.sill;
@@ -331,7 +336,7 @@ function crearMapaDeCalor(zona) {
         //agreagar datos al grafico de las semivarianzas
         document.getElementById("VARIO_TITLE").innerHTML = "Semivariograma | nugget:[" + nugget + " ], Rango:[ " + rango + " ], Sill:[" + sill + "]";
         //valores de semiva Teorico y lags
-        var [dataSemivaTeorico, xVT] = dataVT(nugget, (sill - nugget), rango);
+        var [dataSemivaTeorico, xVT] = dataVT(nugget, (sill - nugget), rango,beta);
         var dataP = createDP(h, event.data.semiva)
         chartVariograma.data.labels = xVT;
         chartVariograma.data.datasets[0].data = dataP;

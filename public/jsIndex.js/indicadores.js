@@ -61,15 +61,16 @@ function colorRGB() {
     return "rgb" + coolor;
 }
 function mostrarVentanaEstDesc() {
-    document.getElementById("cont").style.filter="blur(14px)"
-	document.getElementById("ventanaEstDesc").style.display = ""
-    
-} 
+    document.getElementById("cont").style.filter = "blur(14px)"
+    document.getElementById("ventanaEstDesc").style.display = ""
+
+}
 function closeTableDescri() {
-    document.getElementById("cont").style.filter="blur(0px)"
+    document.getElementById("cont").style.filter = "blur(0px)"
     document.getElementById("ventanaEstDesc").style.display = "none"
 }
 function createTablaDescriptivos(data) {
+    document.getElementById("decriptivo_table_body").innerHTML = ""
     var tr = ""
     console.log(data.gid.length)
     let dh = []
@@ -121,6 +122,17 @@ var Est_Des_Data = {
     coef_variacion: [],
 }
 function indicadores(inf_ovi, _zona, type_dat) {
+    Est_Des_Data = {
+        gid: [],//
+        cant_ovi: [],//
+        cant_h: [],
+        nom_col: [],//
+        media: [],//
+        total_huevos: [],//
+        varianza: [],
+        desviacions_estandar: [],
+        coef_variacion: [],
+    }
     console.log("TypeDat:" + type_dat)
     console.log("inf_ovi::", inf_ovi)
     _zona = [];
@@ -172,7 +184,6 @@ function indicadores(inf_ovi, _zona, type_dat) {
         cant_t_ovi = 0;
         _PH.push({ ph: sum_cant / (inf_ovi[j].length), sumaH: sum_cant, nom_col: inf_ovi[j][0].nom_col, fecha: inf_ovi[j][0].fecha, cant_ovi: inf_ovi[j].length });
     }
-
 
     //var aux_suma = 0
     for (var i = 0; i < inf_ovi.length; i++) {
@@ -265,9 +276,9 @@ function calcularHistograma(index) {
     //console.log("Datos Analizar:",Est_Des_Data.cant_h[index])
     var hist = crearHistogramaDeFrecuencias(Est_Des_Data.cant_h[index])
     document.getElementById("ventanaHistogramaDeFrecuencias").style.display = "";
-    barChartHistograma.data.labels =hist.labelClass;
-    barChartHistograma.data.datasets[0].data = hist.frec; 
+    barChartHistograma.data.labels = hist.labelClass;
+    barChartHistograma.data.datasets[0].data = hist.frec;
     barChartHistograma.update();
     console.log(hist)
 }
-function closeHistograma(){document.getElementById("ventanaHistogramaDeFrecuencias").style.display = "none";}
+function closeHistograma() { document.getElementById("ventanaHistogramaDeFrecuencias").style.display = "none"; }
