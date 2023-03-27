@@ -45,17 +45,11 @@ botonesControlCSV.onAdd = function () { // creación de los botones
 };
 botonesControlCSV.addTo(mapCSVInter); // adición del contenedor dentro del mapa
 /*
-const colors = ["#0017FE", "#0059FE", "#00BDFE", "#00FEFA", "#00FE5C", "#B5FE00", "#DBFE00", "#FEEF00",
-    "#FEB100", "#FE7700", "#FE2E00"
-];
-*/
-//
-
 const colors = ["#006837", "#1a9850", "#66bd63", "#a6d96a", "#d9ef8b", "#ffffbf", "#fee08b", "#fdae61",
     "#f46d43", "#d73027", "#a50026"
 ];
-
-//const colors = ["#2791c5","#5fa2b3","#8cb8a4","#8cb8a4","#d6e37d","#f9fa64","#fbce52","#fba440","#e87329","#f14d1e","#e71914"];
+*/
+const colors = ["#2791c5","#5fa2b3","#8cb8a4","#d6e37d","#f9fa64","#fbce52","#fba440","#e87329","#f14d1e","#e71914"];
 /*
 const colors = ["#190449","#1328e1","#005ff4","#7386f1","#b9ecf1","#f6fca1","#fd5316","#ff1006","#df140f","#6d0c0f"]
 */
@@ -260,8 +254,7 @@ function createDP(x, y) {
 
 function crearMapaDeCalor(zona) {
     zonaCoord = zona[0].geometry.coordinates[0]
-    console.log("1")
-    //console.log("zonas",zona);  
+    console.log("1")  
     zonaCoord[0].forEach(function (point) {
         positions.push([point[1], point[0]]);
     });
@@ -278,17 +271,20 @@ function crearMapaDeCalor(zona) {
     var tamCuadro = Math.ceil(dcuadro / 150) //80
     var squareGrid = turf.squareGrid(bbox, tamCuadro, options);
     var cajaMulti = turf.bbox(squareGrid); //cuadro dlimitador del poligono 
+    var puntos_a_interpolar=[];
     //propiedad centro de masa
-    for (var i = 0; i < squareGrid.features.length; i++) {
-        squareGrid.features[i].properties.centro = turf.centerOfMass(squareGrid.features[i]).geometry.coordinates;
-    }
-    mapCSVInter.fitBounds(scope.getBounds());
+    var centro; 
+    var poligonoDeZona = turf.lineToPolygon(line);
+    for (var i = 0; i < squareGrid.features.length; i++) { 
+        centro=turf.centerOfMass(squareGrid.features[i]).geometry.coordinates; 
+        puntos_a_interpolar.push([centro,turf.booleanWithin(turf.point(centro), poligonoDeZona )  ]) 
+    } 
     //creamos el worker 
     const worker = new Worker('/interpoladoresjs/interpolacion.js');
     //manejamos los errores 
     worker.addEventListener('error', onError, false);
     //iniciamos el worker
-    worker.postMessage({ ovi: ovitrampas, zona: zonaCoord, squareGrid: squareGrid, cajaMulti: cajaMulti, tamCuadro: tamCuadro });
+    worker.postMessage({ ovi: ovitrampas, zona: zonaCoord, cajaMulti: cajaMulti, tamCuadro: tamCuadro,pi:puntos_a_interpolar});
     worker.onmessage = (event) => {
         console.log("Data:", event.data);
         var zi = event.data.zi;
@@ -313,7 +309,7 @@ function crearMapaDeCalor(zona) {
             B = zi.length / A;
             //console.log("!B")
         }
-        let opacidad_img = 0.9;
+        let opacidad_img = 1;
         imgKrig = L.imageOverlay(creaImagen(A, B, zi, "canvasMap", ovitrampas), [
             [cajaMulti[1], cajaMulti[0]],
             [cajaMulti[3], cajaMulti[2]]

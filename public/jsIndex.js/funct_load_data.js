@@ -322,7 +322,7 @@ function readFile(evt) {
 document.getElementById('files').addEventListener('change', readFile, false);
 //funcion para mostrar el archivo cargado en el mapa
 var _jsonGrp = [];
-function AddMapCsv() {
+function AddMapCsv() { 
     _jsonGrp = []
     var checkselect = []
     $('input:checkbox.boxCSV').each(function () {
@@ -358,6 +358,7 @@ function AddMapCsv() {
 function abrirColoniasInfo(){
     window.open(window.location.origin + "/info_colonias_acapulco_inegi_2010", 'popup', 'width=' + (screen.width - 300) + ', height=' + (screen.height - 100) + ', left=' + 10 + ', top=' + 10 + '');
 }
+
 
 
 

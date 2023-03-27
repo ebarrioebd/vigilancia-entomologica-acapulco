@@ -338,7 +338,7 @@ function OrdinaryLeastsquares(X, Y, h, a) {
 
 //interpolador IDW
 function Zi(centro, puntos, exp) {
-    exp = 2
+    exp = 3
     let d = 0;
     let s1 = 0// new Array();
     let s2 = 0// new Array();
@@ -477,8 +477,9 @@ function estimar(lat, long, variograma, x, y, z) {
 self.addEventListener('message', function (e) {
     let inf_ovi = e.data.ovi;
     let zona = e.data.zona;
-
-    let squareGrid = e.data.squareGrid;
+ 
+    let puntos_i=e.data.pi
+    console.log("puntos_i::",puntos_i)
     let cajaMulti = e.data.cajaMulti;
     let tamCuadro = e.data.tamCuadro;
     let x = []
@@ -498,13 +499,12 @@ self.addEventListener('message', function (e) {
     let x_c = 0;//centro punto x
     let y_c = 0;//centro punto y
     //--//console.log("init:",x_c, y_c, variograma,x,y,z)
-    for (let i = 0; i < squareGrid.features.length; i++) {
-        x_c = squareGrid.features[i].properties.centro[0];
-        y_c = squareGrid.features[i].properties.centro[1];
-        if (zona[0].pip(x_c, y_c)) { 
+    for (let i = 0; i <puntos_i.length; i++) { 
+        x_c = puntos_i[i][0][0];
+        y_c = puntos_i[i][0][1]
+        if (puntos_i[i][1]) {  
             [ zi[k] , zibeta[k] ] = estimar(x_c, y_c, variograma, x, y, z); // metodo Kriging
             zidw[k] = Zi([x_c, y_c], inf_ovi, 3);//metodo idw
-
         } else {
             zi[k] = -1;
             zidw[k] = -1;

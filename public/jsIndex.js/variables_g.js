@@ -14,12 +14,13 @@ var gid_de_cada_colonnia=[];
 
 
 ///Ventana de Error
-  $(document).on("click",function(e) { 
-         var container = $("#divError"); 
-            if (!container.is(e.target) && container.has(e.target).length === 0) { 
-              document.getElementById("divError").style.display="none";         
-            }
-     });
+  // $(document).on("click",function(e) { 
+  //        var container = $("#divError"); 
+  //           if (!container.is(e.target) && container.has(e.target).length === 0) { 
+  //             alert("Aocurrido un ERROR")
+  //             ///document.getElementById("divError").style.display="none";         
+  //           }
+  //    });
   function closeVerror(){
     document.getElementById("divError").style.display="none";
   }
